@@ -21,9 +21,9 @@ namespace WPFSurfacePlot3D
         {
             IntervalX = 1;
             IntervalY = 1;
-            IntervalZ = 0.25;
-            FontSize = 0.06;
-            LineThickness = 0.01;
+            IntervalZ = 1;
+            FontSize = 1;
+            LineThickness = 1;
 
             modelContainer = new ModelVisual3D();
             Children.Add(modelContainer);

@@ -47,17 +47,48 @@ namespace Core
             return result.ToString();
         }
 
-        //testing
-        /// Отображение Монна 2-адического числа на отрезок [0,1] 
         public double Monna(string output)
         {
-            double result = 0;
-            for (int i = 1; i < output.Length; i++)
+            double result = 0.0;
+            StringBuilder mona = new();
+            mona.Append("");
+            bool dotFlag = false;
+            bool realFlag = false;
+            for (int i = output.Length - 1; i >= 0; i--)
             {
-                if (output[i] != '.')
-                {
-                    result += int.Parse(output[i].ToString()) / Math.Pow(2, i);
+                if (output[i] == '.')
+                { 
+                    dotFlag = true;
+                    continue;
+                    //mona.Append(output[i]);
                 }
+                if (output[i] != '0' && !dotFlag)
+                {
+                    realFlag = true;
+                }
+            }
+            dotFlag = false;
+            for (int i = output.Length - 1; i >= 0; i--)
+            {
+                if (output[i] == '.')
+                {
+                    dotFlag = true;
+                    continue;
+                }
+                if (realFlag)
+                {
+                    mona.Append(output[i]);
+                }
+                else if (dotFlag)
+                {
+                    mona.Append(output[i]);
+                }
+            }
+            string tmp = mona.ToString();
+            for (int i = 0; i < tmp.Length; i++)
+            {
+                double doubTmp = Convert.ToDouble(tmp[i].ToString());
+                result += doubTmp / Math.Pow(2, i);
             }
             return result;
         }
