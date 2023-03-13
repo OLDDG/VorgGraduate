@@ -22,13 +22,13 @@ namespace WPFSurfacePlot3D
 
     public class SurfacePlotModel : INotifyPropertyChanged
     {
-        private int defaultFunctionSampleSize = 100;
+        private int defaultFunctionSampleSize = 10;
 
         // So the overall goal of this section is to output the appropriate values to SurfacePlotVisual3D - namely,
         // - DataPoints as Point3D, plus xAxisTicks (and y, z) as double[]
         // - plus all the appropriate properties, which can be directly edited/bindable by the user
 
-        public SurfacePlotModel()
+        public SurfacePlotModel(Point3D[,] newDataArray)
         {
             Title = "New Surface Plot";
             XAxisLabel = "x-Axis";
@@ -40,6 +40,9 @@ namespace WPFSurfacePlot3D
             // Initialize the DataPoints collection
             Func<double, double, double> sampleFunction = (x, y) => 10 * Math.Sin(Math.Sqrt(x * x + y * y)) / Math.Sqrt(x * x + y * y);
             PlotFunction(sampleFunction, -10, 10);
+
+            //DataPoints = newDataArray;
+            //PlotData(newDataArray);
         }
 
         #region === Public Methods ===
