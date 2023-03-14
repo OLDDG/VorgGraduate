@@ -147,8 +147,9 @@ namespace WpfApp1
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
-        {
+        { 
             Calculate calc = new(CreateItem());
+            //double xxxx = calc.Reverse("101.0000000", 6);
             int size = Int32.Parse(RegisterSize.Text);
             List<double> x = new ();
             List<string> x2 = new();
@@ -160,33 +161,39 @@ namespace WpfApp1
                 {
                     for (int i = 0; i < Math.Pow(2, size); i++)
                     {
-                        x2.Add(calc.Two(i, size));
-                        x.Add(calc.Monna(calc.Two(i, size)));
-                        y.Add(calc.Monna(calc.Two(i, size)));
+                        x.Add(calc.Monna(calc.Two(i, size), size));
+                        y.Add(calc.Monna(calc.Two(i, size), size));
                     }
-
-                    //var g = calc.Monna(x2[4]);
-
-                    
                     for (int i = 0; i < Math.Pow(2, size); i++)
                     {
-                        double curX = x[i];
                         for (int j = 0; j < Math.Pow(2, size); j++)
                         {
-                            double curY = y[j];
                             string Ffunction = Ffunc.Text.Replace("y", j.ToString());
                             Ffunction = Ffunction.Replace("x", i.ToString());
                             Parser pars = new(Ffunction);
-                            double curZ = calc.Monna(calc.Two(pars.Calc(), 8));
-                            z.Add(calc.Monna(calc.Two(pars.Calc(), 8)));
-                            //newDataArray[i, j] = new Point3D(curX, curY, curZ);
+                            z.Add(calc.Monna(calc.Two(pars.Calc(), 8), size));
                         }
                     }
                     TestScatterPlot(x, y, z, (int)Math.Pow(2, size));
-                    //SurfacePlotModel viewModel = new(newDataArray);
-                    ////viewModel.PlotData(newDataArray);
-                    //surfacePlotView.DataContext = viewModel;
-                    ///Create pen.
+                }
+                else
+                {
+                    for (int i = 0; i < Math.Pow(2, size); i++)
+                    {
+                        x.Add(calc.Reverse(calc.Two(i, size), size));
+                        y.Add(calc.Reverse(calc.Two(i, size), size));
+                    }
+                    for (int i = 0; i < Math.Pow(2, size); i++)
+                    {
+                        for (int j = 0; j < Math.Pow(2, size); j++)
+                        {
+                            string Ffunction = Ffunc.Text.Replace("y", j.ToString());
+                            Ffunction = Ffunction.Replace("x", i.ToString());
+                            Parser pars = new(Ffunction);
+                            z.Add(calc.Reverse(calc.Two(pars.Calc(), 8), size));
+                        }
+                    }
+                    TestScatterPlot(x, y, z, (int)Math.Pow(2, size));
                 }
             }
         }
@@ -258,8 +265,6 @@ namespace WpfApp1
                 nChartVertNo += ((Mesh3D)meshs[i]).GetVertexNo();
                 nChartTriangelNo += ((Mesh3D)meshs[i]).GetTriangleNo();
             }
-            //labelVertNo.Content = String.Format("Vertex No: {0:d}", nChartVertNo);
-            //labelTriNo.Content = String.Format("Triangle No: {0:d}", nChartTriangelNo);
         }
 
         // function for testing 3d scatter plot
