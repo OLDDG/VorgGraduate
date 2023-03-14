@@ -31,7 +31,7 @@ namespace Core
         /// Перевод из double в 2-ичную строку. 
         public string Two (double x, int n)
         {
-            string zel = Convert.ToString(Convert.ToInt32(Math.Truncate(x)), 2);
+            string zel = Convert.ToString(Convert.ToInt64(Math.Truncate(x)), 2);
             List<double> asd = new ();
             asd.Add(x - Math.Truncate(x));
             StringBuilder result = new(zel);
@@ -47,63 +47,34 @@ namespace Core
             return result.ToString();
         }
 
-        public double Monna(string output)
+        public double Monna(string output, int size)
         {
-            double result = 0.0;
-            StringBuilder mona = new();
-            mona.Append("");
-            bool dotFlag = false;
-            bool realFlag = false;
-            for (int i = output.Length - 1; i >= 0; i--)
+            output = output.Replace('.'.ToString(), string.Empty);
+            string reversed = new (output.Reverse().ToArray());
+            
+            double result = 0;
+            int pow = size;
+            for (int i = reversed.Length - 1; i >= reversed.Length - size; i--)
             {
-                if (output[i] == '.')
-                { 
-                    dotFlag = true;
-                    continue;
-                    //mona.Append(output[i]);
-                }
-                if (output[i] != '0' && !dotFlag)
-                {
-                    realFlag = true;
-                }
-            }
-            dotFlag = false;
-            for (int i = output.Length - 1; i >= 0; i--)
-            {
-                if (output[i] == '.')
-                {
-                    dotFlag = true;
-                    continue;
-                }
-                if (realFlag)
-                {
-                    mona.Append(output[i]);
-                }
-                else if (dotFlag)
-                {
-                    mona.Append(output[i]);
-                }
-            }
-            string tmp = mona.ToString();
-            for (int i = 0; i < tmp.Length; i++)
-            {
-                double doubTmp = Convert.ToDouble(tmp[i].ToString());
-                result += doubTmp / Math.Pow(2, i);
+                double doubTmp = Convert.ToDouble(reversed[i].ToString());
+                result += doubTmp / Math.Pow(2, pow);
+                pow--;
             }
             return result;
         }
 
         //testing
         /// Другое отображение 2-адического числа на отрезок [0,1] 
-        public double Reverse(string output)
+        public double Reverse(string output, int size)
         {
+            output = output.Replace('.'.ToString(), string.Empty);
             double result = 0;
-            for (int i = 1; i < output.Length; i++)
+            int pow = 1;
+            for (int i = 0; i < size; i++)
             {
-                if (output[output.Length - i] != '.')
-                {
-                    result += int.Parse(output[output.Length - i].ToString()) / Math.Pow(2, i);
-                }
+                double doubTmp = Convert.ToDouble(output[i].ToString());
+                result += doubTmp / Math.Pow(2, pow);
+                pow++;
             }
             return result;
         }
