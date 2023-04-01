@@ -99,12 +99,12 @@ namespace WPFChart3D
         {
             int nDataNo = GetDataNo();
             if (nDataNo == 0) return;
-            m_xMin = 0;// Single.MaxValue;
-            m_yMin = 0;// Single.MaxValue;
-            m_zMin = 0;// Single.MaxValue;
-            m_xMax = 1;// Single.MinValue;
-            m_yMax = 1;// Single.MinValue;
-            m_zMax = 1;// Single.MinValue;
+            m_xMin = Single.MaxValue;
+            m_yMin = Single.MaxValue;
+            m_zMin = Single.MaxValue;
+            m_xMax = Single.MinValue;
+            m_yMax = Single.MinValue;
+            m_zMax = Single.MinValue;
             for (int i = 0; i < nDataNo; i++)
             {
                 float xV = this[i].x;
@@ -121,12 +121,12 @@ namespace WPFChart3D
 
         public void SetAxes(float x0, float y0, float z0, float xL, float yL, float zL)
         {
-            m_xAxisLength = xL;
-            m_yAxisLength = yL;
-            m_zAxisLength = zL;
-            m_xAxisCenter = x0;
-            m_yAxisCenter = y0;
-            m_zAxisCenter = z0;
+            m_xAxisLength = 100;// xL;
+            m_yAxisLength = 100;// yL;
+            m_zAxisLength = 100;// zL;
+            m_xAxisCenter = 0;// x0;
+            m_yAxisCenter = 0;// y0;
+            m_zAxisCenter = 0;// z0;
             m_bUseAxes = true;
         }
 

@@ -152,7 +152,6 @@ namespace WpfApp1
             //double xxxx = calc.Reverse("101.0000000", 6);
             int size = Int32.Parse(RegisterSize.Text);
             List<double> x = new ();
-            List<string> x2 = new();
             List<double> y = new ();
             List<double> z = new ();
             if (regime == "последовательность")
@@ -196,64 +195,91 @@ namespace WpfApp1
                     TestScatterPlot(x, y, z, (int)Math.Pow(2, size));
                 }
             }
+            else
+            {
+                int inputX = Int32.Parse(InputX.Text);
+                int inputY = Int32.Parse(InputY.Text);
+                string Ffunction = Ffunc.Text.Replace("y", inputY.ToString());
+                Ffunction = Ffunction.Replace("x", inputX.ToString());
+                x.Add(inputX);
+                y.Add(inputY);
+                Parser pars = new(Ffunction);
+                z.Add(pars.Calc());
+                for (int i = 0; i < Math.Pow(2, size); i++)
+                {
+                    for (int j = 0; j < Math.Pow(2, size); j++)
+                    {
+                        x.Add(y[(int)(i * Math.Pow(2, size) + j)]);
+                        y.Add(z[(int)(i * Math.Pow(2, size) + j)]);
+                        Ffunction = Ffunc.Text.Replace("y", y[(int)(i * Math.Pow(2, size) + j + 1)].ToString());
+                        Ffunction = Ffunction.Replace("x", x[(int)(i * Math.Pow(2, size) + j + 1)].ToString());
+                        Parser parser = new(Ffunction);
+                        z.Add(parser.Calc());
+                    }
+                }
+                var p = x;
+                var t = y;
+                var l = z;
+                TestScatterPlot(x, y, z, (int)Math.Pow(2, size));
+            }
         }
 
 
         // function for testing surface chart
-        public void TestSurfacePlot(int nGridNo)
-        {
-            int nXNo = nGridNo;
-            int nYNo = nGridNo;
-            // 1. set the surface grid
-            m_3dChart = new UniformSurfaceChart3D();
-            ((UniformSurfaceChart3D)m_3dChart).SetGrid(nXNo, nYNo, -100, 100, -100, 100);
+        //public void TestSurfacePlot(int nGridNo)
+        //{
+        //    int nXNo = nGridNo;
+        //    int nYNo = nGridNo;
+        //    // 1. set the surface grid
+        //    m_3dChart = new UniformSurfaceChart3D();
+        //    ((UniformSurfaceChart3D)m_3dChart).SetGrid(nXNo, nYNo, -100, 100, -100, 100);
 
-            // 2. set surface chart z value
-            double xC = m_3dChart.XCenter();
-            double yC = m_3dChart.YCenter();
-            int nVertNo = m_3dChart.GetDataNo();
-            double zV;
-            for (int i = 0; i < nVertNo; i++)
-            {
-                Vertex3D vert = m_3dChart[i];
+        //    // 2. set surface chart z value
+        //    double xC = m_3dChart.XCenter();
+        //    double yC = m_3dChart.YCenter();
+        //    int nVertNo = m_3dChart.GetDataNo();
+        //    double zV;
+        //    for (int i = 0; i < nVertNo; i++)
+        //    {
+        //        Vertex3D vert = m_3dChart[i];
 
-                double r = 0.15 * Math.Sqrt((vert.x - xC) * (vert.x - xC) + (vert.y - yC) * (vert.y - yC));
-                if (r < 1e-10) zV = 1;
-                else zV = Math.Sin(r) / r;
+        //        double r = 0.15 * Math.Sqrt((vert.x - xC) * (vert.x - xC) + (vert.y - yC) * (vert.y - yC));
+        //        if (r < 1e-10) zV = 1;
+        //        else zV = Math.Sin(r) / r;
 
-                m_3dChart[i].z = (float)zV;
-            }
-            m_3dChart.GetDataRange();
+        //        m_3dChart[i].z = (float)zV;
+        //    }
+        //    m_3dChart.GetDataRange();
 
-            // 3. set the surface chart color according to z vaule
-            double zMin = m_3dChart.ZMin();
-            double zMax = m_3dChart.ZMax();
-            for (int i = 0; i < nVertNo; i++)
-            {
-                Vertex3D vert = m_3dChart[i];
-                double h = (vert.z - zMin) / (zMax - zMin);
+        //    // 3. set the surface chart color according to z vaule
+        //    double zMin = m_3dChart.ZMin();
+        //    double zMax = m_3dChart.ZMax();
+        //    for (int i = 0; i < nVertNo; i++)
+        //    {
+        //        Vertex3D vert = m_3dChart[i];
+        //        double h = (vert.z - zMin) / (zMax - zMin);
 
-                Color color = WPFChart3D.TextureMapping.PseudoColor(h);
-                m_3dChart[i].color = color;
-            }
+        //        Color color = WPFChart3D.TextureMapping.PseudoColor(h);
+        //        m_3dChart[i].color = color;
+        //    }
 
-            // 4. Get the Mesh3D array from surface chart
-            ArrayList meshs = ((UniformSurfaceChart3D)m_3dChart).GetMeshes();
+        //    // 4. Get the Mesh3D array from surface chart
+        //    ArrayList meshs = ((UniformSurfaceChart3D)m_3dChart).GetMeshes();
 
-            // 5. display vertex no and triangle no of this surface chart
-            UpdateModelSizeInfo(meshs);
+        //    // 5. display vertex no and triangle no of this surface chart
+        //    UpdateModelSizeInfo(meshs);
 
-            // 6. Set the model display of surface chart
-            WPFChart3D.Model3D model3d = new WPFChart3D.Model3D();
-            Material backMaterial = new DiffuseMaterial(new SolidColorBrush(Colors.Gray));
-            m_nChartModelIndex = model3d.UpdateModel(meshs, backMaterial, m_nChartModelIndex, this.mainViewport);
+        //    // 6. Set the model display of surface chart
+        //    WPFChart3D.Model3D model3d = new WPFChart3D.Model3D();
+        //    Material backMaterial = new DiffuseMaterial(new SolidColorBrush(Colors.Gray));
+        //    m_nChartModelIndex = model3d.UpdateModel(meshs, backMaterial, m_nChartModelIndex, this.mainViewport);
 
-            // 7. set projection matrix, so the data is in the display region
-            float xMin = m_3dChart.XMin();
-            float xMax = m_3dChart.XMax();
-            m_transformMatrix.CalculateProjectionMatrix(xMin, xMax, xMin, xMax, zMin, zMax, 0.5);
-            TransformChart();
-        }
+        //    // 7. set projection matrix, so the data is in the display region
+        //    float xMin = m_3dChart.XMin();
+        //    float xMax = m_3dChart.XMax();
+        //    m_transformMatrix.CalculateProjectionMatrix(xMin, xMax, xMin, xMax, zMin, zMax, 0.5);
+        //    TransformChart();
+        //}
 
         private void UpdateModelSizeInfo(ArrayList meshs)
         {
@@ -283,8 +309,8 @@ namespace WpfApp1
                 {
                     ScatterPlotItem plotItem = new();
 
-                    plotItem.w = (float)0.01;
-                    plotItem.h = (float)0.01;
+                    plotItem.w = (float)1;//(float)0.01;
+                    plotItem.h = (float)1;//(float)0.01;
                     plotItem.x = (float)x[i];
                     plotItem.y = (float)y[j];
                     plotItem.z = (float)z[(int)(i * size + j)];
@@ -315,7 +341,7 @@ namespace WpfApp1
             m_nChartModelIndex = model3d.UpdateModel(meshs, null, m_nChartModelIndex, this.mainViewport);
 
             // 7. set projection matrix
-            float viewRange = (float)1;
+            float viewRange = (float)100;
             m_transformMatrix.CalculateProjectionMatrix(0, viewRange, 0, viewRange, 0, viewRange, 0.3);
             TransformChart();
         }
