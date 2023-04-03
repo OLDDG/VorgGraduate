@@ -35,56 +35,6 @@ namespace WPFChart3D
             }
         }
 
-        public float XCenter()
-        {
-            return (m_xMin + m_xMax) / 2;
-        }
-
-        public float YCenter()
-        {
-            return (m_yMin + m_yMax) / 2;
-        }
-
-        public float XRange()
-        {
-            return m_xMax - m_xMin;
-        }
-        public float YRange()
-        {
-            return m_yMax - m_yMin;
-        }
-        public float ZRange()
-        {
-            return m_zMax - m_zMin;
-        }
-        public float XMin()
-        {
-            return m_xMin;
-        }
-
-        public float XMax()
-        {
-            return m_xMax;
-        }
-        public float YMin()
-        {
-            return m_yMin;
-        }
-
-        public float YMax()
-        {
-            return m_yMax;
-        }
-        public float ZMin()
-        {
-            return m_zMin;
-        }
-
-        public float ZMax()
-        {
-            return m_zMax;
-        }
-
         public int GetDataNo()
         {
             return m_vertices.Length;
@@ -110,45 +60,18 @@ namespace WPFChart3D
                 float xV = this[i].x;
                 float yV = this[i].y;
                 float zV = this[i].z;
-                //if (m_xMin > xV) m_xMin = xV;
-                //if (m_yMin > yV) m_yMin = yV;
-                //if (m_zMin > zV) m_zMin = zV;
-                //if (m_xMax < xV) m_xMax = xV;
-                //if (m_yMax < yV) m_yMax = yV;
-                //if (m_zMax < zV) m_zMax = zV;
             }
         }
 
-        public void SetAxes(float x0, float y0, float z0, float xL, float yL, float zL)
+        public void SetAxes(float size)
         {
-            m_xAxisLength = 100;// xL;
-            m_yAxisLength = 100;// yL;
-            m_zAxisLength = 100;// zL;
-            m_xAxisCenter = 0;// x0;
-            m_yAxisCenter = 0;// y0;
-            m_zAxisCenter = 0;// z0;
+            m_xAxisLength = size;
+            m_yAxisLength = size;
+            m_zAxisLength = size;
+            m_xAxisCenter = 0;// -(float)Math.Pow(2, 4);// x0;
+            m_yAxisCenter = 0;// -(float)Math.Pow(2, 4);// y0;
+            m_zAxisCenter = 0;// -(float)Math.Pow(2, 4);// z0;
             m_bUseAxes = true;
-        }
-
-        public void SetAxes()
-        {
-            SetAxes(0.05f);
-        }
-
-        public void SetAxes(float margin)
-        {
-            float xRange = m_xMax - m_xMin;
-            float yRange = m_yMax - m_yMin;
-            float zRange = m_zMax - m_zMin;
-
-            float xC = m_xMin - margin * xRange;
-            float yC = m_yMin - margin * yRange;
-            float zC = m_zMin - margin * zRange;
-            float xL = (1 + 2 * margin) * xRange;
-            float yL = (1 + 2 * margin) * yRange;
-            float zL = (1 + 2 * margin) * zRange;
-
-            SetAxes(xC, yC, zC, xL, yL, zL);
         }
 
         // add the axes mesh to the Mesh3D array
