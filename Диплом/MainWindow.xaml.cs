@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Media3D;
 using Core;
-using WPFSurfacePlot3D;
 using WPFChart3D;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -20,6 +18,7 @@ namespace WpfApp1
     {
         string regime;
         string reflection;
+        string regimeValues;
 
 
         // transform class object for rotate the 3d model
@@ -52,15 +51,20 @@ namespace WpfApp1
 
         private void regime_Checked(object sender, RoutedEventArgs e)
         {
+            RadioButton pressed1 = (RadioButton)sender;
+            regime = pressed1.Content.ToString();
+        }
+
+        private void regimeValues_Checked(object sender, RoutedEventArgs e)
+        {
             RadioButton pressed = (RadioButton)sender;
-            regime = pressed.Content.ToString();
+            regimeValues = pressed.Content.ToString();
         }
 
         private Item CreateItem()
         {
             Item item = new();
             item.Ffunc = Ffunc.Text;
-            item.Gfunc = Gfunc.Text;
             item.RegisterSize = RegisterSize.Text;
             item.InputX = InputX.Text;
             item.InputY = InputY.Text;
@@ -104,16 +108,6 @@ namespace WpfApp1
             else if (args.RightButton == MouseButtonState.Pressed)          // select rect
             {
                 m_selectRect.OnMouseMove(pt, mainViewport, m_nRectModelIndex);
-            }
-            else
-            {
-                /*
-                String s1;
-                Point pt2 = m_transformMatrix.VertexToScreenPt(new Point3D(0.5, 0.5, 0.3), mainViewport);
-                s1 = string.Format("Screen:({0:d},{1:d}), Predicated: ({2:d}, H:{3:d})", 
-                    (int)pt.X, (int)pt.Y, (int)pt2.X, (int)pt2.Y);
-                this.statusPane.Text = s1;
-                */
             }
         }
 
@@ -209,17 +203,39 @@ namespace WpfApp1
                 {
                     for (int j = 0; j < Math.Pow(2, size); j++)
                     {
-                        x.Add(y[(int)(i * Math.Pow(2, size) + j)]);
-                        y.Add(z[(int)(i * Math.Pow(2, size) + j)]);
-                        Ffunction = Ffunc.Text.Replace("y", y[(int)(i * Math.Pow(2, size) + j + 1)].ToString());
-                        Ffunction = Ffunction.Replace("x", x[(int)(i * Math.Pow(2, size) + j + 1)].ToString());
-                        Parser parser = new(Ffunction);
-                        z.Add(parser.Calc());
+                        if (regimeValues == "1")
+                        {
+                            x.Add(y[(int)(i * Math.Pow(2, size) + j)]);
+                            y.Add(z[(int)(i * Math.Pow(2, size) + j)]);
+                            Ffunction = Ffunc.Text.Replace("y", y[(int)(i * Math.Pow(2, size) + j + 1)].ToString());
+                            Ffunction = Ffunction.Replace("x", x[(int)(i * Math.Pow(2, size) + j + 1)].ToString());
+                            Parser parser = new(Ffunction);
+                            z.Add(parser.Calc());
+                        }
+                        else
+                        {
+                            double tmpX = y[(int)(i * Math.Pow(2, size) + j)];
+                            double tmpY = z[(int)(i * Math.Pow(2, size) + j)];
+                            
+                            Ffunction = Ffunc.Text.Replace("y", tmpY.ToString());
+                            Ffunction = Ffunction.Replace("x", tmpX.ToString());
+                            Parser parser = new(Ffunction);
+                            double tmpZ = parser.Calc();
+                            x.Add(tmpZ);
+
+                            Ffunction = Ffunc.Text.Replace("y", tmpZ.ToString());
+                            Ffunction = Ffunction.Replace("x", tmpY.ToString());
+                            parser = new(Ffunction);
+                            double tmpZ2 = parser.Calc();
+                            y.Add(tmpZ2);
+
+                            Ffunction = Ffunc.Text.Replace("y", tmpZ2.ToString());
+                            Ffunction = Ffunction.Replace("x", tmpZ.ToString());
+                            parser = new(Ffunction);
+                            z.Add(parser.Calc());
+                        }
                     }
                 }
-                var p = x;
-                var t = y;
-                var l = z;
                 TestScatterPlot(x, y, z, (int)Math.Pow(2, size), true);
             }
         }
