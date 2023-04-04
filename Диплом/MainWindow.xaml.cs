@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Media3D;
 using Core;
-using WPFSurfacePlot3D;
 using WPFChart3D;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -20,6 +18,7 @@ namespace WpfApp1
     {
         string regime;
         string reflection;
+        string regimeValues;
 
 
         // transform class object for rotate the 3d model
@@ -52,15 +51,20 @@ namespace WpfApp1
 
         private void regime_Checked(object sender, RoutedEventArgs e)
         {
+            RadioButton pressed1 = (RadioButton)sender;
+            regime = pressed1.Content.ToString();
+        }
+
+        private void regimeValues_Checked(object sender, RoutedEventArgs e)
+        {
             RadioButton pressed = (RadioButton)sender;
-            regime = pressed.Content.ToString();
+            regimeValues = pressed.Content.ToString();
         }
 
         private Item CreateItem()
         {
             Item item = new();
             item.Ffunc = Ffunc.Text;
-            item.Gfunc = Gfunc.Text;
             item.RegisterSize = RegisterSize.Text;
             item.InputX = InputX.Text;
             item.InputY = InputY.Text;
@@ -105,16 +109,6 @@ namespace WpfApp1
             {
                 m_selectRect.OnMouseMove(pt, mainViewport, m_nRectModelIndex);
             }
-            else
-            {
-                /*
-                String s1;
-                Point pt2 = m_transformMatrix.VertexToScreenPt(new Point3D(0.5, 0.5, 0.3), mainViewport);
-                s1 = string.Format("Screen:({0:d},{1:d}), Predicated: ({2:d}, H:{3:d})", 
-                    (int)pt.X, (int)pt.Y, (int)pt2.X, (int)pt2.Y);
-                this.statusPane.Text = s1;
-                */
-            }
         }
 
         public void OnViewportMouseUp(object sender, System.Windows.Input.MouseButtonEventArgs args)
@@ -152,7 +146,6 @@ namespace WpfApp1
             //double xxxx = calc.Reverse("101.0000000", 6);
             int size = Int32.Parse(RegisterSize.Text);
             List<double> x = new ();
-            List<string> x2 = new();
             List<double> y = new ();
             List<double> z = new ();
             if (regime == "последовательность")
@@ -174,7 +167,7 @@ namespace WpfApp1
                             z.Add(calc.Monna(calc.Two(pars.Calc(), 8), size));
                         }
                     }
-                    TestScatterPlot(x, y, z, (int)Math.Pow(2, size));
+                    TestScatterPlot(x, y, z, (int)Math.Pow(2, size), false);
                 }
                 else
                 {
@@ -193,66 +186,58 @@ namespace WpfApp1
                             z.Add(calc.Reverse(calc.Two(pars.Calc(), 8), size));
                         }
                     }
-                    TestScatterPlot(x, y, z, (int)Math.Pow(2, size));
+                    TestScatterPlot(x, y, z, (int)Math.Pow(2, size), false);
                 }
             }
-        }
-
-
-        // function for testing surface chart
-        public void TestSurfacePlot(int nGridNo)
-        {
-            int nXNo = nGridNo;
-            int nYNo = nGridNo;
-            // 1. set the surface grid
-            m_3dChart = new UniformSurfaceChart3D();
-            ((UniformSurfaceChart3D)m_3dChart).SetGrid(nXNo, nYNo, -100, 100, -100, 100);
-
-            // 2. set surface chart z value
-            double xC = m_3dChart.XCenter();
-            double yC = m_3dChart.YCenter();
-            int nVertNo = m_3dChart.GetDataNo();
-            double zV;
-            for (int i = 0; i < nVertNo; i++)
+            else
             {
-                Vertex3D vert = m_3dChart[i];
+                int inputX = Int32.Parse(InputX.Text);
+                int inputY = Int32.Parse(InputY.Text);
+                string Ffunction = Ffunc.Text.Replace("y", inputY.ToString());
+                Ffunction = Ffunction.Replace("x", inputX.ToString());
+                x.Add(inputX);
+                y.Add(inputY);
+                Parser pars = new(Ffunction);
+                z.Add(pars.Calc());
+                for (int i = 0; i < Math.Pow(2, size); i++)
+                {
+                    for (int j = 0; j < Math.Pow(2, size); j++)
+                    {
+                        if (regimeValues == "1")
+                        {
+                            x.Add(y[(int)(i * Math.Pow(2, size) + j)]);
+                            y.Add(z[(int)(i * Math.Pow(2, size) + j)]);
+                            Ffunction = Ffunc.Text.Replace("y", y[(int)(i * Math.Pow(2, size) + j + 1)].ToString());
+                            Ffunction = Ffunction.Replace("x", x[(int)(i * Math.Pow(2, size) + j + 1)].ToString());
+                            Parser parser = new(Ffunction);
+                            z.Add(parser.Calc());
+                        }
+                        else
+                        {
+                            double tmpX = y[(int)(i * Math.Pow(2, size) + j)];
+                            double tmpY = z[(int)(i * Math.Pow(2, size) + j)];
+                            
+                            Ffunction = Ffunc.Text.Replace("y", tmpY.ToString());
+                            Ffunction = Ffunction.Replace("x", tmpX.ToString());
+                            Parser parser = new(Ffunction);
+                            double tmpZ = parser.Calc();
+                            x.Add(tmpZ);
 
-                double r = 0.15 * Math.Sqrt((vert.x - xC) * (vert.x - xC) + (vert.y - yC) * (vert.y - yC));
-                if (r < 1e-10) zV = 1;
-                else zV = Math.Sin(r) / r;
+                            Ffunction = Ffunc.Text.Replace("y", tmpZ.ToString());
+                            Ffunction = Ffunction.Replace("x", tmpY.ToString());
+                            parser = new(Ffunction);
+                            double tmpZ2 = parser.Calc();
+                            y.Add(tmpZ2);
 
-                m_3dChart[i].z = (float)zV;
+                            Ffunction = Ffunc.Text.Replace("y", tmpZ2.ToString());
+                            Ffunction = Ffunction.Replace("x", tmpZ.ToString());
+                            parser = new(Ffunction);
+                            z.Add(parser.Calc());
+                        }
+                    }
+                }
+                TestScatterPlot(x, y, z, (int)Math.Pow(2, size), true);
             }
-            m_3dChart.GetDataRange();
-
-            // 3. set the surface chart color according to z vaule
-            double zMin = m_3dChart.ZMin();
-            double zMax = m_3dChart.ZMax();
-            for (int i = 0; i < nVertNo; i++)
-            {
-                Vertex3D vert = m_3dChart[i];
-                double h = (vert.z - zMin) / (zMax - zMin);
-
-                Color color = WPFChart3D.TextureMapping.PseudoColor(h);
-                m_3dChart[i].color = color;
-            }
-
-            // 4. Get the Mesh3D array from surface chart
-            ArrayList meshs = ((UniformSurfaceChart3D)m_3dChart).GetMeshes();
-
-            // 5. display vertex no and triangle no of this surface chart
-            UpdateModelSizeInfo(meshs);
-
-            // 6. Set the model display of surface chart
-            WPFChart3D.Model3D model3d = new WPFChart3D.Model3D();
-            Material backMaterial = new DiffuseMaterial(new SolidColorBrush(Colors.Gray));
-            m_nChartModelIndex = model3d.UpdateModel(meshs, backMaterial, m_nChartModelIndex, this.mainViewport);
-
-            // 7. set projection matrix, so the data is in the display region
-            float xMin = m_3dChart.XMin();
-            float xMax = m_3dChart.XMax();
-            m_transformMatrix.CalculateProjectionMatrix(xMin, xMax, xMin, xMax, zMin, zMax, 0.5);
-            TransformChart();
         }
 
         private void UpdateModelSizeInfo(ArrayList meshs)
@@ -268,7 +253,7 @@ namespace WpfApp1
         }
 
         // function for testing 3d scatter plot
-        public void TestScatterPlot(List<double> x, List<double> y, List<double> z, int size)
+        public void TestScatterPlot(List<double> x, List<double> y, List<double> z, int size, bool isSubseq)
         {
             // 1. set scatter chart data no.
             m_3dChart = new ScatterChart3D();
@@ -283,8 +268,16 @@ namespace WpfApp1
                 {
                     ScatterPlotItem plotItem = new();
 
-                    plotItem.w = (float)0.01;
-                    plotItem.h = (float)0.01;
+                    if (isSubseq)
+                    {
+                        plotItem.w = (float)0.5;//(float)0.01;
+                        plotItem.h = (float)0.5;//(float)0.01;
+                    }
+                    else
+                    {
+                        plotItem.w = (float)0.01;//(float)0.01;
+                        plotItem.h = (float)0.01;//(float)0.01;
+                    }
                     plotItem.x = (float)x[i];
                     plotItem.y = (float)y[j];
                     plotItem.z = (float)z[(int)(i * size + j)];
@@ -302,8 +295,14 @@ namespace WpfApp1
 
             // 3. set the axes
             m_3dChart.GetDataRange();
-            m_3dChart.SetAxes();
-
+            if (!isSubseq)
+            {
+                m_3dChart.SetAxes(1);
+            }
+            else
+            {
+                m_3dChart.SetAxes(size);
+            }
             // 4. get Mesh3D array from the scatter plot
             ArrayList meshs = ((ScatterChart3D)m_3dChart).GetMeshes();
 

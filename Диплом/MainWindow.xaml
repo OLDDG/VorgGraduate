@@ -77,10 +77,10 @@
                     <Label Content="Введите функцию f(x,y) = "/>
                     <TextBox x:Name="Ffunc" Width="150" Height="24"/>
                 </StackPanel>
-                <StackPanel Orientation="Horizontal">
+                <!--<StackPanel Orientation="Horizontal">
                     <Label Content="Введите функцию усложнения g(x,y) = "/>
                     <TextBox x:Name="Gfunc" Width="150" Height="24"/>
-                </StackPanel>
+                </StackPanel>-->
                 <StackPanel Orientation="Horizontal">
                     <Label Content="Введите размер регистра n = "/>
                     <TextBox x:Name="RegisterSize" Width="150" Height="24" />
@@ -93,17 +93,22 @@
                 <StackPanel Orientation="Vertical">
                     <Label Content="Выберите режим построения отображения"/>
                     <RadioButton GroupName="regime" Content="последовательность" Checked="regime_Checked"/>
-                    <RadioButton GroupName="regime" Content="начальные значения" Checked="regime_Checked"/>
+                    <RadioButton Name="SubSeq" GroupName="regime" Content="начальные значения" Checked="regime_Checked"/>
                 </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <Label Content="Введите x = "/>
-                    <TextBox x:Name="InputX" Width="150" Height="24" Text="0"/>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Введите x = "/>
+                        <TextBox x:Name="InputX" Width="150" Height="24" Text="0"/>
                 </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <Label Content="Введите y = "/>
-                    <TextBox x:Name="InputY" Width="150" Height="24" Text="0"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal">
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Введите y = "/>
+                        <TextBox x:Name="InputY" Width="150" Height="24" Text="0"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical">
+                        <Label Content="Выберите режим построения отображения"/>
+                        <RadioButton GroupName="regimeValues" Content="1" Checked="regimeValues_Checked"/>
+                        <RadioButton GroupName="regimeValues" Content="2" Checked="regimeValues_Checked"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
                     <Button x:Name="button1"  Width="100" Height="30" Content="Кнопка" Click="Button_Click" RenderTransformOrigin="0.402,9.255" />
                 </StackPanel>
             </StackPanel>
